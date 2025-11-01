@@ -1,0 +1,37 @@
+version: 1
+project:
+  name: string
+  php_min: string
+rules:
+  - id: string                # 例: php.strict_types
+    title: string
+    category: [syntax, typing, naming, structure, exceptions, docs, testing]
+    required: boolean         # 必須か
+    weight: number            # 配点（max）
+    penalty:                  # 違反時の減点定義
+      missing: number
+      partial: number
+    severity: [info, warning, error]
+    detector:                 # 自動検出器の仕様
+      type: [ast, regex, tool]
+      tool: [phpstan, phpcs, psalm, phpmd, custom]
+      rule: string            # ツールのルール名や正規表現
+      path_glob: string       # 対象パス
+    threshold:                # しきい値（率・回数など）
+      type: [ratio, count]
+      min_ratio: number
+      max_count: number
+    evidence:                 # 証跡（教育用途）
+      examples:
+        good_ref: string
+        bad_ref: string
+      samples:                # 自動抽出された代表例
+        - file: string
+          line: number
+          snippet: string
+    rationale: string         # なぜ重要か
+    autofix:
+      available: boolean
+      tool: [php-cs-fixer, rector, custom]
+      recipe: string
+

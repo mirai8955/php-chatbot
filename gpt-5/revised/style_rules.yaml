@@ -1,0 +1,106 @@
+version: 1
+project:
+  name: monolog/monolog (sample)
+  php_min: ">=8.1"
+
+rules:
+  - id: php.strict_types
+    title: "declare(strict_types=1) を先頭に置く"
+    category: syntax
+    required: true
+    weight: 10
+    penalty: { missing: 10, partial: 5 }
+    severity: error
+    detector:
+      type: ast
+      tool: custom
+      rule: declare(strict_types=1)
+      path_glob: "src/**/*.php"
+    threshold: { type: ratio, min_ratio: 1.0 }
+    evidence:
+      examples:
+        good_ref: examples/good_bad_examples.md#php.strict_types-good
+        bad_ref: examples/good_bad_examples.md#php.strict_types-bad
+    rationale: "型の厳密性を保証し、バグを早期に検出するため。"
+    autofix: { available: false }
+
+  - id: typing.property_types
+    title: "全プロパティに型を付与する"
+    category: typing
+    required: true
+    weight: 10
+    penalty: { missing: 8, partial: 4 }
+    severity: error
+    detector:
+      type: ast
+      tool: custom
+      rule: typed_properties_required
+      path_glob: "src/**/*.php"
+    threshold: { type: ratio, min_ratio: 0.98 }
+    evidence:
+      examples:
+        good_ref: examples/good_bad_examples.md#typing.property_types-good
+        bad_ref: examples/good_bad_examples.md#typing.property_types-bad
+    rationale: "不変条件とコントラクトを明確化し、静的解析の精度を上げる。"
+    autofix: { available: false }
+
+  - id: typing.return_types
+    title: "全 public メソッドに戻り値型を付与する"
+    category: typing
+    required: true
+    weight: 8
+    penalty: { missing: 8, partial: 4 }
+    severity: warning
+    detector:
+      type: ast
+      tool: custom
+      rule: public_methods_return_type_required
+      path_glob: "src/**/*.php"
+    threshold: { type: ratio, min_ratio: 0.98 }
+    evidence:
+      examples:
+        good_ref: examples/good_bad_examples.md#typing.return_types-good
+        bad_ref: examples/good_bad_examples.md#typing.return_types-bad
+    rationale: "API の契約を明示し、後方互換性の破壊を防ぐ。"
+    autofix: { available: false }
+
+  - id: exceptions.usage_categories
+    title: "例外の使い分け（InvalidArgument/Logic/UnexpectedValue 等）"
+    category: exceptions
+    required: false
+    weight: 6
+    penalty: { missing: 4, partial: 2 }
+    severity: warning
+    detector:
+      type: regex
+      tool: custom
+      rule: "throw new \\((InvalidArgumentException|LogicException|UnexpectedValueException|Psr\\\\Log\\\\InvalidArgumentException))"
+      path_glob: "src/**/*.php"
+    threshold: { type: ratio, min_ratio: 0.8 }
+    evidence:
+      examples:
+        good_ref: examples/good_bad_examples.md#exceptions.usage_categories-good
+        bad_ref: examples/good_bad_examples.md#exceptions.usage_categories-bad
+    rationale: "エラー分類の一貫性により、ハンドリング方針を明確化する。"
+    autofix: { available: false }
+
+  - id: structure.guard_clauses
+    title: "ガード句による早期 return でネストを抑制"
+    category: structure
+    required: false
+    weight: 6
+    penalty: { missing: 3, partial: 1 }
+    severity: info
+    detector:
+      type: ast
+      tool: custom
+      rule: cognitive_complexity_threshold
+      path_glob: "src/**/*.php"
+    threshold: { type: count, max_count: 10 }
+    evidence:
+      examples:
+        good_ref: examples/good_bad_examples.md#structure.guard_clauses-good
+        bad_ref: examples/good_bad_examples.md#structure.guard_clauses-bad
+    rationale: "認知的複雑度を抑え、可読性・保守性を高める。"
+    autofix: { available: false }
+
